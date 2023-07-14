@@ -57,11 +57,11 @@ const fetchData = async (id) => {
         const userData1 =  await getUsers(id);
         var savedData = userData1[0]
         let adminDetails = {
-            id          : savedData.id,
-            name        : savedData.name,
-            usertype    : savedData.usertype,
-            email       : savedData.email,
-            project     : savedData.project,
+            id          : savedData.user_id,
+            name        : savedData.first_name,
+            
+            email       : savedData.user_email,
+            
         }
         return adminDetails
     } catch (error) {

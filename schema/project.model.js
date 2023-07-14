@@ -35,6 +35,22 @@ const getUsers = async (email) => {
     }
 }
 
+const getOtp = async (otp,email) => {
+    var conn = null
+    try {
+        conn = await db.connection();
+        const resp = await conn.query('SELECT * FROM users WHERE otp = ? AND user_email= ?', [otp,email]);
+        conn.release();
+        return resp[0]
+    }
+    catch (error) {
+        console.log('Error in select users table', error)
+        return { connection: false, statuscode: 0, message: "Error in users table", error: error.message }
+    } finally {
+        conn.destroy();
+    }
+}
+
 const insertUserData = async (fname,lname,email, password,date) => {
     var conn = null
     try {
@@ -51,4 +67,53 @@ const insertUserData = async (fname,lname,email, password,date) => {
     }
 }
 
-module.exports = {getUserLogin, getUsers,insertUserData}
+const updateUserOtp = async (email, otp, otp_time) => {
+    otp_time = moment().format("YYYY-MM-DD, HH:mm:ss");
+    var conn = null
+    try {
+        conn = await db.connection();
+        const resp = await conn.query('update users set otp= ? , otp_time = ? where user_email=?', [otp,otp_time, email]);
+        conn.release();
+        return resp[0]
+    }
+    catch (error) {
+        console.log('Error in select users table', error)
+        return { connection: false, statuscode: 0, message: "Error in users table", error: error.message }
+    } finally {
+        conn.destroy();
+    }
+}
+
+const deleteUserOtp = async (email) => {
+    var conn = null
+    try {
+        conn = await db.connection();
+        const resp = await conn.query('UPDATE users SET otp = NULL WHERE user_email = ?', [email]);
+        conn.release();
+        return resp[0]
+    }
+    catch (error) {
+        console.log('Error in select users table', error)
+        return { connection: false, statuscode: 0, message: "Error in users table", error: error.message }
+    } finally {
+        conn.destroy();
+    }
+}
+
+const updateUserPassword = async (email, password,time) => {
+    var conn = null
+    time = moment().format("YYYY-MM-DD, HH:mm:ss");
+    try {
+        conn = await db.connection();
+        const resp = await conn.query('UPDATE users SET user_password = ? , updated_at = ? WHERE user_email = ?', [password, time,email]);
+        conn.release();
+        return resp[0]
+    }
+    catch (error) {
+        console.log('Error in select users table', error)
+        return { connection: false, statuscode: 0, message: "Error in users table", error: error.message }
+    } finally {
+        conn.destroy();
+    }
+}
+module.exports = {getUserLogin, getUsers,getOtp,insertUserData,updateUserOtp,updateUserPassword,deleteUserOtp}
